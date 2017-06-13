@@ -173,11 +173,20 @@ public struct CoordinatesCollection: Sequence {
     public subscript(index: UInt32) -> Coordinate {
         var x: Double = 0
         var y: Double = 0
+        var z: Double = 0
 
         assert(self.count>index, "Index out of bounds")
         let sequence = GEOSGeom_getCoordSeq_r(GEOS_HANDLE, self.geometry)
         GEOSCoordSeq_getX_r(GEOS_HANDLE, sequence, index, &x);
         GEOSCoordSeq_getY_r(GEOS_HANDLE, sequence, index, &y);
+
+        var dims: UInt32 = 0
+        GEOSCoordSeq_getDimensions_r(GEOS_HANDLE, sequence, &dims)
+        if dims > 2
+        {
+            GEOSCoordSeq_getZ_r(GEOS_HANDLE, sequence, index, &z)
+            return Coordinate(x: x, y: y, z: z)
+        }
 
         return Coordinate(x: x, y: y)
     }
@@ -238,8 +247,19 @@ public struct GeometriesCollection<T: Geometry>: Sequence {
 public struct Coordinate {
     public let x: CoordinateDegrees
     public let y: CoordinateDegrees
+    public let z: CoordinateDegrees
+    public let hasZ: Bool
+    public init(x: CoordinateDegrees, y: CoordinateDegrees, z: CoordinateDegrees) {
+        self.x = x
+        self.y = y
+        self.z = z
+        self.hasZ = true
+    }
+
     public init(x: CoordinateDegrees, y: CoordinateDegrees) {
         self.x = x
         self.y = y
+        self.z = 0
+        self.hasZ = false
     }
 }

@@ -30,6 +30,16 @@ class GEOSwiftTests: XCTestCase {
         XCTAssert(result, "WKT parse failed (expected to receive a POINT)")
     }
 
+    func testCreatePointZFromWKT() {
+        var result = false
+        let WKT = "POINT Z(45 9 1)"
+        if let point = Geometry.create(WKT) as? Waypoint,
+            let point2 = Waypoint(WKT: WKT) {
+            result = point.coordinate.x == 45 && point.coordinate.y == 9 && point.coordinate.z == 1 && point.coordinate.hasZ && point == point2
+        }
+        XCTAssert(result, "WKT parse failed (expected to receive a POINT Z)")
+    }
+
     func testCreateLinestringFromWKT() {
         var result = false
         let WKT = "LINESTRING(3 4,10 50,20 25)"
@@ -38,6 +48,16 @@ class GEOSwiftTests: XCTestCase {
             result = linestring.points.count == 3 && linestring.points[0].x == 3 && linestring.points[0].y == 4 && linestring == linestring2
         }
         XCTAssert(result, "WKT parse failed (expected to receive a LINESTRING)")
+    }
+
+    func testCreateLinestringZFromWKT() {
+        var result = false
+        let WKT = "LINESTRING Z(3 4 1,10 50 2,20 25 3)"
+        if let linestring = Geometry.create(WKT) as? LineString,
+            let linestring2 = LineString(WKT: WKT) {
+            result = linestring.points.count == 3 && linestring.points[0].x == 3 && linestring.points[0].y == 4 && linestring.points[0].z == 1 && linestring.points[0].hasZ && linestring == linestring2
+        }
+        XCTAssert(result, "WKT parse failed (expected to receive a LINESTRING Z)")
     }
 
     func testCreatePolygonFromWKT() {
